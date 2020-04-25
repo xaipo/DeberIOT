@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Bodegas</string>
+    <string name="title_activity_add_bodega">AddBodega</string>
+    <string name="title_activity_camera_read">CameraRead</string>
+    <string name="title_activity_remove_bodega">RemoveBodega</string>
+    <string name="title_activity_restart">Activar</string>
+    <string name="title_activity_ok">Ok</string>
+    <string name="title_activity_list_items">ListItems</string>
+</resources>
