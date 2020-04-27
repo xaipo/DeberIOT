@@ -8,6 +8,8 @@ import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,8 +27,16 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+
+import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.entity.StringEntity;
 
 public class ListItems extends AppCompatActivity {
 String typeTransaccion;
@@ -151,6 +161,72 @@ String mount;
             }
         });
     }
+
+
+    public void sendRequest(View view) {
+
+
+        try {
+
+            String Url = "http://159.89.55.10:3005/history/saveHistory";
+            JSONArray arr = new JSONArray();
+            if (typeTransaccion.equals("+")) {
+                for (int i = 0; i < ListItemsSingle.getInstance().listAdd.size(); i++) {
+                    JSONObject obj = new JSONObject();
+                    obj.put("sku", ListItemsSingle.getInstance().listAdd.get(i).sku);
+                    obj.put("stock", ListItemsSingle.getInstance().listAdd.get(i).mount);
+                    arr.put(obj);
+                }
+            } else {
+                for (int i = 0; i < ListItemsSingle.getInstance().listRemove.size(); i++) {
+
+                }
+            }
+
+            JSONObject send = new JSONObject();
+            send.put("description", "MOVIMIENTO_BODEGA");
+            send.put("tipo", typeTransaccion.toString());
+            send.put("products", arr);
+
+
+            StringEntity entity = new StringEntity(send.toString());
+            AsyncHttpClient client = new AsyncHttpClient();
+
+
+            client.post(getApplicationContext(), Url, entity, "application/json", new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject obj) {
+                    try {
+
+
+                        //user.setUserId(obj.getInt("userid"));
+                    } catch (Exception e) {
+                        // TODO Auto-generated catch block
+                        Toast.makeText(getApplicationContext(), "Error Occured [Server's JSON response might be invalid]!", Toast.LENGTH_LONG).show();
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    if (statusCode == 404) {
+                        Toast.makeText(getApplicationContext(), "404 - Nie odnaleziono serwera!", Toast.LENGTH_LONG).show();
+                    } else if (statusCode == 500) {
+                        Toast.makeText(getApplicationContext(), "500 - Coś poszło nie tak po stronie serwera!", Toast.LENGTH_LONG).show();
+                    } else if (statusCode == 403) {
+                        Toast.makeText(getApplicationContext(), "Podano niepoprawne dane!", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), throwable.toString(), Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+        } catch (JSONException e) {
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+
     class MyAdapter extends ArrayAdapter<String> {
 
         Context context;

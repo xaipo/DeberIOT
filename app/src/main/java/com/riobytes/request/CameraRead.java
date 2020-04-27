@@ -70,6 +70,27 @@ public class CameraRead extends AppCompatActivity implements ZXingScannerView.Re
                 })
                 .check();
         txtResult.setText(typeTransaccion);
+        Dexter.withActivity(this)
+                .withPermission(Manifest.permission.INTERNET)
+                .withListener(new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted(PermissionGrantedResponse response) {
+                        Toast.makeText(CameraRead.this,"Puede enviar datos",Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onPermissionDenied(PermissionDeniedResponse response) {
+                        Toast.makeText(CameraRead.this,"Aceptar que la aplicacion utilice la camara",Toast.LENGTH_SHORT).show();
+                        // MainActivity.requestPermissions(new String[]{Manifest.permission.CAMERA}, 1011);
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
+
+                    }
+                })
+                .check();
+        txtResult.setText(typeTransaccion);
     }
     @Override
     protected  void onDestroy (){
